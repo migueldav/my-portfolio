@@ -5,7 +5,7 @@ export interface Props {
 }
 const { projects = [], locale = 'pt' } = Astro.props;
 import ProjectCard from "./ProjectCard.astro";
-const tags = Array.from(new Set((projects || []).flatMap(p => (p.tags || []).map(t => String(t).trim())))).filter(Boolean);
+const tags = Array.from(new Set((projects || []).flatMap(p => (p.tags || []).map((t: string | undefined) => String(t)?.trim())))).filter(Boolean);
 const title = locale && String(locale).toLowerCase().startsWith('en') ? 'Projects' : 'Projetos';
 ---
 <section id="projects" class="projects-section" data-carousel-root>

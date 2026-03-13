@@ -1,5 +1,6 @@
 ---
 import "../../styles/index.css";
+import Head from "../../components/Head.astro";
 import Navbar from "../../components/Navbar.astro";
 import Hero from "../../components/Hero.astro";
 import ProjectsCarousel from "../../components/ProjectsCarousel.astro";
@@ -16,46 +17,18 @@ const projects = PROJECTS;
 ---
 <!doctype html>
 <html lang="pt-BR">
+  
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Portfólio — {SITE.name}</title>
-    <meta name="description" content={SITE.description} />
-    <meta property="og:title" content={`Portfólio — ${SITE.name}`} />
-    <meta property="og:description" content={SITE.description} />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content={SITE.ogImage} />
-    <link rel="canonical" href="/pt/" />
-    <link rel="alternate" hreflang="pt" href="/pt/" />
-    <link rel="alternate" hreflang="en" href="/en/" />
-    <link rel="alternate" hreflang="x-default" href="/" />
-    <meta property="og:url" content="https://seusite.com/pt/" />
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content={`Portfólio — ${SITE.name}`}>
-    <meta name="twitter:description" content={SITE.description}>
-    <meta name="twitter:image" content={SITE.ogImage}>
-
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
-
-    <script type="application/ld+json">
-    {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "{SITE.name}",
-    "url": "https://seusite.com",
-    "jobTitle": "Frontend Developer",
-    "sameAs": [
-      "https://github.com/seuuser",
-      "https://linkedin.com/in/seuuser"
-    ]
-    }
-    </script>
-
+    <Head
+      title={`Portfólio — ${SITE.name}`}
+      description={SITE.description}
+      image={SITE.ogImage}
+      locale="pt"
+      path=""
+    />
   </head>
 
   <body>
-
     <Navbar site={SITE} ui={UI} />
 
     <Hero site={SITE} ui={UI} />
