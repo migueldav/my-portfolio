@@ -1,0 +1,20 @@
+---
+export interface Props {
+  site?: { name?: string; hero?: string; description?: string };
+  ui?: { seeProjects?: string; contactCTA?: string };
+}
+
+const { site = {}, ui = {} } = Astro.props;
+---
+
+<header class="hero" id="hero">
+  <div class="container">
+    <h1>{site.hero} <span class="accent">{site.name}</span></h1>
+    <p>{site.description}</p>
+
+    <div style="display:flex;gap:.6rem;align-items:center;justify-content:center;margin-top:1rem;">
+      <a href="#projects" class="hero-cta">{ui.seeProjects}</a>
+      <a href="#contact" class="hero-cta">{ui.contactCTA}</a>
+    </div>
+  </div>
+</header>

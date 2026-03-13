@@ -1,0 +1,88 @@
+---
+import "../../styles/index.css";
+import Navbar from "../../components/Navbar.astro";
+import Hero from "../../components/Hero.astro";
+import ProjectsCarousel from "../../components/ProjectsCarousel.astro";
+import Skills from "../../components/Skills.astro";
+import ExpandableList from "../../components/ExpandableList.astro";
+import Contact from "../../components/Contact.astro";
+import Footer from "../../components/Footer.astro";
+import { SITE } from "../../data/pt/site.js";
+import { PROJECTS } from "../../data/pt/projects.js";
+import { SKILLS, SKILLS_EXTRA } from "../../data/pt/skills.js";
+import { UI } from "../../data/pt/ui.js";
+
+const projects = PROJECTS;
+---
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Portfólio — {SITE.name}</title>
+    <meta name="description" content={SITE.description} />
+    <meta property="og:title" content={`Portfólio — ${SITE.name}`} />
+    <meta property="og:description" content={SITE.description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={SITE.ogImage} />
+    <link rel="canonical" href="/pt/" />
+    <link rel="alternate" hreflang="pt" href="/pt/" />
+    <link rel="alternate" hreflang="en" href="/en/" />
+    <link rel="alternate" hreflang="x-default" href="/" />
+    <meta property="og:url" content="https://seusite.com/pt/" />
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content={`Portfólio — ${SITE.name}`}>
+    <meta name="twitter:description" content={SITE.description}>
+    <meta name="twitter:image" content={SITE.ogImage}>
+
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+
+    <script type="application/ld+json">
+    {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "{SITE.name}",
+    "url": "https://seusite.com",
+    "jobTitle": "Frontend Developer",
+    "sameAs": [
+      "https://github.com/seuuser",
+      "https://linkedin.com/in/seuuser"
+    ]
+    }
+    </script>
+
+  </head>
+
+  <body>
+
+    <Navbar site={SITE} ui={UI} />
+
+    <Hero site={SITE} ui={UI} />
+
+    <main class="container" id="maincontent">
+      <section id="about">
+        <h2>{UI.aboutTitle}</h2>
+        <p>{SITE.about}</p>
+      </section>
+
+      <Skills skills={SKILLS} locale="pt" />
+
+      <ExpandableList id="extra-skills" title="Habilidades Extras" items={SKILLS_EXTRA} locale="pt" initiallyOpen={false} />
+
+      <ProjectsCarousel projects={projects} locale="pt" />
+
+      <Contact site={SITE} ui={UI} locale="pt" action="https://formspree.io/f/movkagjj" />
+    </main>
+
+    <Footer site={SITE} ui={UI} />
+    
+    <script src="/js/smooth-scroll.js" defer></script>
+    <script src="/js/header-toggle.js" defer></script>
+    <script src="/js/contact-form.js" defer></script>
+    <script src="/js/header-menu.js" defer></script>
+    <script src="/js/carousel.js" defer></script>
+    <script src="/js/lang-toggle.js" defer></script>
+    <script src="/js/demo-modal.js" defer></script>
+  </body>
+</html>

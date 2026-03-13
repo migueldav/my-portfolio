@@ -1,0 +1,205 @@
+.skills-grid {
+  display: grid;
+  gap: .6rem;
+  grid-template-columns: 1fr;
+}
+
+.skill {
+  background: var(--card-bg);
+  border-radius: 12px;
+  padding: 18px;
+  border: 1px solid var(--card-border);
+  display: block;
+  position: relative;
+  color: var(--text);
+  box-shadow: 0 6px 18px rgba(2,6,23,0.5);
+}
+
+.skill-meta-left {
+  margin-bottom: 12px;
+  display: block;
+}
+
+.skill-name {
+  font-weight: 700;
+  font-size: 16px;
+  display: block;
+  color: var(--text);
+}
+
+.skill-category {
+  color: var(--muted-2);
+  display: block;
+  font-size: 13px;
+  margin-top: 4px;
+}
+
+.skill-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  justify-content: space-between;
+}
+
+.skill-bar {
+  background: rgba(0,0,0,0.22);
+  height: 12px;
+  border-radius: 999px;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.skill-bar-inner {
+  height: 100%;
+  display: block;
+  border-radius: 999px;
+  background: linear-gradient(90deg, rgba(14,165,164,1) 0%, rgba(11,132,121,1) 100%);
+  box-shadow: 0 6px 20px rgba(6,26,28,0.36) inset;
+  position: relative;
+  overflow: hidden;
+  transition: width .8s cubic-bezier(.2,.9,.2,1);
+}
+
+.skill-bar-inner::before {
+  content: "";
+  position: absolute;
+  top: -20%;
+  left: -140%;
+  width: 240%;
+  height: 140%;
+  background: linear-gradient(
+    120deg,
+    rgba(255,255,255,0) 30%,
+    rgba(255,255,255,0.35) 45%,
+    rgba(14,165,164,0.55) 50%,
+    rgba(255,255,255,0.35) 55%,
+    rgba(255,255,255,0) 70%
+  );
+  animation: skillShine 3.2s linear infinite;
+  pointer-events: none;
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.skill-level {
+  color: var(--muted-2);
+  font-weight: 700;
+  min-width: 40px;
+  text-align: right;
+}
+
+.expand-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-elev-1, rgba(255,255,255,0.03));
+  box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+  color: var(--text);
+}
+
+.expand-btn:active {
+  transform: translateY(1px);
+}
+
+.expand-btn:focus {
+  outline: 3px solid rgba(14,165,164,0.12);
+  outline-offset: 3px;
+}
+
+.expand-btn[aria-expanded="true"] ion-icon {
+  transform: rotate(180deg);
+  transition: transform .28s ease;
+}
+
+.expand-btn ion-icon {
+  transition: transform .28s ease;
+  font-size: 22px;
+}
+
+.extra-skills {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .42s cubic-bezier(.2,.9,.2,1), opacity .28s ease;
+}
+
+.extra-skills.open {
+  max-height: 1200px;
+}
+
+.extra-skills .skill {
+  opacity: 1;
+  transform: none;
+  transition: none;
+}
+
+@media (max-width: 599px) {
+  .skills-grid:not(.expanded) .skill:nth-child(n+5) {
+    display: none;
+  }
+  .extra-skills {
+    display: none;
+  }
+  .skills-grid.expanded .extra-skills,
+  .skills-grid .extra-skills.open {
+    display: block;
+    max-height: 1200px;
+    overflow: visible;
+  }
+  .skills-grid.expanded .extra-skills .skill,
+  .skills-grid .extra-skills.open .skill {
+    display: block;
+  }
+}
+
+@media (min-width: 600px) {
+  .skills-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: .8rem;
+  }
+  .expand-btn {
+    display: none;
+  }
+  .extra-skills {
+    display: contents;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+  .skills-grid .skill {
+    align-self: start;
+    min-height: 110px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .extra-skills .skill {
+    transition: none;
+  }
+}
+
+@keyframes skillShine {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.skill:nth-child(1) .skill-bar-inner::before { animation-delay: 0s; }
+.skill:nth-child(2) .skill-bar-inner::before { animation-delay: .6s; }
+.skill:nth-child(3) .skill-bar-inner::before { animation-delay: 1.2s; }
+.skill:nth-child(4) .skill-bar-inner::before { animation-delay: 1.8s; }
+
+@media (prefers-reduced-motion: reduce) {
+  .skill-bar-inner::before { animation: none; }
+  .skill-bar-inner { transition: none; }
+  .extra-skills { transition: none; }
+  .expand-btn { transition: none; }
+}

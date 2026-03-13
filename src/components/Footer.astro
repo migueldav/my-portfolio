@@ -1,0 +1,18 @@
+---
+export interface Props {
+  site?: { name?: string; };
+  ui?: { backToTop?: string; footerText?: string };
+}
+
+const { site = {}, ui = {} } = Astro.props;
+---
+
+<footer class="footer">
+    <a href="#top" class="footer-top">
+        <span aria-hidden="true">↑</span> {ui.backToTop}
+    </a>
+
+    <div>
+        © {new Date().getFullYear()} {site.name} — {ui.footerText}.
+    </div>
+</footer>

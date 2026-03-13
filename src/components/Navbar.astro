@@ -1,0 +1,57 @@
+---
+export interface Props {
+  site?: { name?: string };
+  ui?: { navbarItems?: string[] };
+  locale?: string;
+}
+
+const { site = {}, ui = {}, locale = 'en' } = Astro.props;
+const navbarItems = ui.navbarItems ?? [];
+const mainNavigationLabel = locale && String(locale).toLowerCase().startsWith('en') ? 'Main navigation' : 'Navegação principal';
+const langToggleLabel = locale && String(locale).toLowerCase().startsWith('en') ? 'Change language' : 'Mudar idioma';
+const openMenuLabel = locale && String(locale).toLowerCase().startsWith('en') ? 'Open menu' : 'Abrir menu';
+---
+
+<header class="site-header" role="banner">
+  <div class="container header-inner">
+    <div class="header-left">
+      <strong class="site-name">{site.name}</strong>
+    </div>
+
+    <div class="header-center">
+      <nav class="nav desktop-nav" role="navigation" aria-label={mainNavigationLabel}>
+        <a href="#about">{navbarItems[0]}</a>
+        <a href="#skills">{navbarItems[1]}</a>
+        <a href="#projects">{navbarItems[2]}</a>
+        <a href="#contact">{navbarItems[3]}</a>
+      </nav>
+    </div>
+
+    <div class="header-right">
+      <button class="lang-toggle" aria-label={langToggleLabel} data-role="lang-toggle" aria-haspopup="false" aria-expanded="false">
+        <span class="lang-primary">PT</span>
+        <span class="lang-secondary">EN</span>
+      </button>
+
+      <button class="mobile-toggle" aria-label={openMenuLabel} aria-expanded="false">
+        <span class="hamburger">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+      </button>
+    </div>
+  </div>
+
+  <nav id="mobile-nav" class="mobile-nav" aria-hidden="true" inert>
+    <div class="mobile-nav-inner container">
+      <div class="mobile-links" role="menu" aria-label="Navegação mobile">
+        <a role="menuitem" href="#about">{navbarItems[0]}</a>
+        <a role="menuitem" href="#skills">{navbarItems[1]}</a>
+        <a role="menuitem" href="#projects">{navbarItems[2]}</a>
+        <a role="menuitem" href="#contact">{navbarItems[3]}</a>
+      </div>
+      <div class="mobile-actions"></div>
+    </div>
+  </nav>
+</header>

@@ -1,0 +1,63 @@
+---
+export interface Props {
+  projects?: any[];
+  locale?: string;
+}
+const { projects = [], locale = 'pt' } = Astro.props;
+import ProjectCard from "./ProjectCard.astro";
+const placeholder = locale && String(locale).toLowerCase().startsWith('en') ? "Search projects..." : "Pesquisar projetos...";
+---
+<section id="projects-filter" class="projects-filter">
+  <div class="pf-controls">
+    <input id="pf-search" class="pf-search" type="search" placeholder={placeholder} aria-label={placeholder} />
+    <div class="pf-tags" role="toolbar" aria-label={locale && String(locale).toLowerCase().startsWith('en') ? "Filter by tags" : "Filtrar por tags"}>
+      <button type="button" class="pf-tag pf-tag--all" data-tag="all" aria-pressed="true">{locale && String(locale).toLowerCase().startsWith('en') ? 'All' : 'Todos'}</button>
+      {Array.from(new Set((projects || []).flatMap(p => (p.tags || []).map(t => String(t).trim())))).filter(Boolean).map(tag => (
+        <button type="button" class="pf-tag" data-tag={tag} aria-pressed="false">{tag}</button>
+      ))}
+    </div>
+  </div>
+
+  <div id="pf-grid" class="grid pf-grid">
+    {projects.map(p => (
+      <div class="pf-item" data-tags={(p.tags || []).join(" ")} data-title={(p.title || '').toLowerCase()}>
+        <ProjectCard project={p} locale={locale} />
+      </div>
+    ))}
+  </div>
+</section>
+
+<script is:inline>
+(() => {
+  const root = document.currentScript && document.currentScript.parentElement;
+  if (!root) return;
+  const search = root.querySelector('#pf-search');
+  const tagButtons = Array.from(root.querySelectorAll('.pf-tag'));
+  const items = Array.from(root.querySelectorAll('.pf-item'));
+  function filterItems() {
+    const q = (search.value || '').trim().toLowerCase();
+    const activeTagBtn = tagButtons.find(b => b.getAttribute('aria-pressed') === 'true');
+    const activeTag = activeTagBtn && activeTagBtn.dataset.tag;
+    items.forEach(it => {
+      const title = it.dataset.title || '';
+      const tags = (it.dataset.tags || '').toLowerCase();
+      const matchesQuery = q === '' || title.includes(q) || tags.includes(q);
+      const matchesTag = activeTag === 'all' || (tags && tags.split(' ').includes((activeTag || '').toLowerCase()));
+      it.style.display = (matchesQuery && matchesTag) ? '' : 'none';
+    });
+  }
+  let debounceTimer = null;
+  search.addEventListener('input', () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => filterItems(), 150);
+  });
+  tagButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tagButtons.forEach(b => { b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      filterItems();
+    });
+  });
+  filterItems();
+})();
+</script>

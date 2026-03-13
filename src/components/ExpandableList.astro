@@ -1,0 +1,101 @@
+---
+export interface Props {
+  id?: string;
+  title?: string;
+  items: string[];
+  locale?: string;
+  initiallyOpen?: boolean;
+}
+const {
+  id = `expand-${Math.random().toString(36).slice(2,9)}`,
+  title = locale && String(locale).toLowerCase().startsWith('en') ? 'Show more' : 'Mostrar mais',
+  items = [],
+  initiallyOpen = false
+} = Astro.props;
+const contentId = `${id}-content`;
+---
+<div class="expandable" data-open={initiallyOpen ? "true" : "false"}>
+  <button
+    type="button"
+    class="expand-toggle"
+    aria-expanded={initiallyOpen ? "true" : "false"}
+    aria-controls={contentId}
+    data-toggle-btn
+    data-target={contentId}
+  >
+    <span class="expand-title">{title}</span>
+    <span class="expand-indicator" aria-hidden="true">▾</span>
+  </button>
+
+  <div
+    id={contentId}
+    class="expand-content"
+    role="region"
+    aria-hidden={!initiallyOpen}
+    data-toggle-content
+    hidden={!initiallyOpen}
+  >
+    <ul class="expand-list">
+      {items.map(i => (
+        <li class="expand-item">{i}</li>
+      ))}
+    </ul>
+  </div>
+</div>
+
+<script is:inline>
+(function () {
+  const scriptEl = document.currentScript;
+  const root = scriptEl && scriptEl.parentElement;
+  if (!root) return;
+  const btn = root.querySelector('[data-toggle-btn]');
+  const content = root.querySelector('[data-toggle-content]');
+  if (!btn || !content) return;
+  function open() {
+    content.hidden = false;
+    const h = content.scrollHeight;
+    content.style.maxHeight = '0px';
+    requestAnimationFrame(() => {
+      content.style.maxHeight = h + 'px';
+    });
+    btn.classList.add('open');
+    btn.setAttribute('aria-expanded', 'true');
+    content.setAttribute('aria-hidden', 'false');
+  }
+  function close() {
+    content.style.maxHeight = content.scrollHeight + 'px';
+    requestAnimationFrame(() => {
+      content.style.maxHeight = '0px';
+    });
+    btn.classList.remove('open');
+    btn.setAttribute('aria-expanded', 'false');
+    content.setAttribute('aria-hidden', 'true');
+    const onEnd = () => {
+      content.hidden = true;
+      content.removeEventListener('transitionend', onEnd);
+    };
+    content.addEventListener('transitionend', onEnd);
+  }
+  btn.addEventListener('click', () => {
+    const isOpen = btn.getAttribute('aria-expanded') === 'true';
+    if (isOpen) close();
+    else open();
+  });
+  btn.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      btn.click();
+    }
+  });
+  if (btn.getAttribute('aria-expanded') === 'true') {
+    content.style.maxHeight = content.scrollHeight + 'px';
+    btn.classList.add('open');
+    content.hidden = false;
+    content.setAttribute('aria-hidden', 'false');
+  } else {
+    content.style.maxHeight = '0px';
+    content.hidden = true;
+    content.setAttribute('aria-hidden', 'true');
+  }
+})();
+</script>

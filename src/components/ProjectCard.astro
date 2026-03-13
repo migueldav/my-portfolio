@@ -1,0 +1,28 @@
+---
+export interface Props {
+  project?: any;
+  title?: string;
+  desc?: string;
+  slug?: string;
+  locale?: string;
+}
+const { project = null, title = '', desc = '', slug = '', locale = 'pt' } = Astro.props;
+const p = project || {};
+const cardTitle = p.title || title || '';
+const cardDesc = p.desc || desc || '';
+const cardLink = `${locale}/demo/${p.slug || slug || ''}`;
+const linkText = locale && String(locale).toLowerCase().startsWith('en') ? 'See demo' : 'Ver demo';
+---
+<article class="card project-card" role="article" aria-label={cardTitle}>
+  <div>
+    <h3>{cardTitle}</h3>
+    {cardDesc ? <p>{cardDesc}</p> : null}
+  </div>
+  <div style="display:flex; gap:.6rem; align-items:center; margin-top:10px;">
+    {cardLink ? (
+      <a class="link demo-link" href={cardLink || '#'} data-demo={cardLink} target="_blank" rel="noopener">{linkText}</a>
+    ) : (
+      <span class="link muted" aria-hidden="true">{locale && String(locale).toLowerCase().startsWith('en') ? 'No demo' : 'Sem demo'}</span>
+    )}
+  </div>
+</article>

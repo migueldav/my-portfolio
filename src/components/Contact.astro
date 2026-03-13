@@ -1,0 +1,71 @@
+---
+export interface Props {
+  site?: { github?: string; instagram?: string; facebook?: string; linkedin?: string };
+  ui?: { contactTitle?: string; contactCTA?: string; contactLead?: string };
+  locale?: string;
+  action?: string;
+}
+const { site = {}, ui = {}, locale = 'pt', action = 'https://formspree.io/f/movkagjj' } = Astro.props;
+const github = site.github ? `https://github.com/${site.github}` : '#';
+const instagram = site.instagram ? `https://instagram.com/${site.instagram}` : '#';
+const facebook = site.facebook ? `${site.facebook}` : '#';
+const contactTitle = ui.contactTitle || (locale && String(locale).toLowerCase().startsWith('en') ? 'Contact' : 'Contato');
+const contactLead = ui.contactLead || (locale && String(locale).toLowerCase().startsWith('en') ? 'Want to collaborate or discuss an idea? Send me a message — I’ll get back to you quickly.' : 'Quer trabalhar comigo ou tirar uma dúvida? Manda uma mensagem — respondo rapidinho.');
+const submitLabel = ui.contactCTA || (locale && String(locale).toLowerCase().startsWith('en') ? 'Send message' : 'Enviar mensagem');
+const githubLabel = locale && String(locale).toLowerCase().startsWith('en') ? 'GitHub' : 'GitHub';
+const instagramLabel = locale && String(locale).toLowerCase().startsWith('en') ? 'Instagram' : 'Instagram';
+const facebookLabel = locale && String(locale).toLowerCase().startsWith('en') ? 'Facebook' : 'Facebook';
+---
+<section id="contact" class="contact-section">
+  <h2>{contactTitle}</h2>
+  <p class="lead">{contactLead}</p>
+
+  <form id="contactForm" class="contact-form" action={action} method="POST" novalidate>
+    <input type="text" name="_honey" style="display:none" tabindex="-1" autocomplete="off" />
+    <input type="hidden" name="_subject" value={locale && String(locale).toLowerCase().startsWith('en') ? 'New contact from website' : 'Novo contato pelo site'} />
+    <input type="hidden" name="_captcha" value="false" />
+
+    <label for="name">{
+      locale && String(locale).toLowerCase().startsWith('en') ? 'Name' : 'Nome'
+    }</label>
+    <input id="name" name="name" type="text" required placeholder={locale && String(locale).toLowerCase().startsWith('en') ? 'Your name' : 'Seu nome'} />
+
+    <label for="email">{
+      locale && String(locale).toLowerCase().startsWith('en') ? 'Email' : 'E-mail'
+    }</label>
+    <input id="email" name="email" type="email" required placeholder={locale && String(locale).toLowerCase().startsWith('en') ? 'your@email.com' : 'seu@email.com'} />
+
+    <label for="message">{
+      locale && String(locale).toLowerCase().startsWith('en') ? 'Message' : 'Mensagem'
+    }</label>
+    <textarea id="message" name="message" rows="6" required placeholder={locale && String(locale).toLowerCase().startsWith('en') ? 'Write your message...' : 'Escreva sua mensagem...'}></textarea>
+
+    <div class="captcha-row" style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;margin-top:.6rem;">
+      <label id="captchaLabel" for="captchaAnswer" style="margin:0;">
+        { locale && String(locale).toLowerCase().startsWith('en') ? 'What is' : 'Quanto é' } <strong id="captchaA"></strong> + <strong id="captchaB"></strong> ?
+      </label>
+      <input id="captchaAnswer" name="captchaAnswer" type="number" required placeholder={locale && String(locale).toLowerCase().startsWith('en') ? 'Answer' : 'Resposta'} inputmode="numeric" style="width:110px;padding:.45rem;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.02);color:var(--text)"/>
+      <div id="captchaFeedback" class="form-error" aria-live="polite" style="min-height:1.2em;color:var(--muted);"></div>
+    </div>
+
+    <div class="form-actions" style="margin-top:.9rem;">
+      <button type="submit" class="btn">{submitLabel}</button>
+      <div id="formStatus" class="form-status" aria-live="polite" style="margin-left:1rem;color:var(--muted)"></div>
+    </div>
+  </form>
+
+  <div class="social-row" style="margin-top:1rem; display:flex; gap:.6rem; align-items:center;">
+    <a class="social-icon-btn" href={instagram} target="_blank" rel="noopener" aria-label={instagramLabel}>
+      <ion-icon name="logo-instagram" aria-hidden="true"></ion-icon>
+      <span class="visually-hidden">{instagramLabel}</span>
+    </a>
+    <a class="social-icon-btn" href={github} target="_blank" rel="noopener" aria-label={githubLabel}>
+      <ion-icon name="logo-github" aria-hidden="true"></ion-icon>
+      <span class="visually-hidden">{githubLabel}</span>
+    </a>
+    <a class="social-icon-btn" href={facebook} target="_blank" rel="noopener" aria-label={facebookLabel}>
+      <ion-icon name="logo-facebook" aria-hidden="true"></ion-icon>
+      <span class="visually-hidden">{facebookLabel}</span>
+    </a>
+  </div>
+</section>

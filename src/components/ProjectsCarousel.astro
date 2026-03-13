@@ -1,0 +1,100 @@
+---
+export interface Props {
+  projects?: any[];
+  locale?: string;
+}
+const { projects = [], locale = 'pt' } = Astro.props;
+import ProjectCard from "./ProjectCard.astro";
+const tags = Array.from(new Set((projects || []).flatMap(p => (p.tags || []).map(t => String(t).trim())))).filter(Boolean);
+const title = locale && String(locale).toLowerCase().startsWith('en') ? 'Projects' : 'Projetos';
+---
+<section id="projects" class="projects-section" data-carousel-root>
+  <h2>{title}</h2>
+
+  <div class="projects-filter-wrap">
+    <div class="pf-controls">
+      <input id="pf-search" class="pf-search" type="search" placeholder={locale && String(locale).toLowerCase().startsWith('en') ? "Search projects..." : "Pesquisar projetos..."} aria-label={locale && String(locale).toLowerCase().startsWith('en') ? "Search projects" : "Pesquisar projetos"} />
+      <div class="pf-tags" role="toolbar" aria-label={locale && String(locale).toLowerCase().startsWith('en') ? "Filter by tags" : "Filtrar por tags"}>
+        <button type="button" class="pf-tag pf-tag--all" data-tag="all" aria-pressed="true">{locale && String(locale).toLowerCase().startsWith('en') ? 'All' : 'Todos'}</button>
+        {tags.map(tag => (
+          <button type="button" class="pf-tag" data-tag={tag} aria-pressed="false">{tag}</button>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="projects-wrapper">
+    <div class="projects-grid">
+      {projects.map(p => (
+        <div
+          class="project-item"
+          data-project-id={p.id || p.title}
+          data-tags={(p.tags || []).join(" ")}
+          data-title={(p.title || '').toLowerCase()}
+        >
+          <ProjectCard project={p} locale={locale} />
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script is:inline>
+(() => {
+  const root = document.currentScript && document.currentScript.parentElement;
+  if (!root) return;
+  const search = root.querySelector('#pf-search');
+  const tagButtons = Array.from(root.querySelectorAll('.pf-tag'));
+  const grid = root.querySelector('.projects-grid');
+  const items = () => Array.from(grid.querySelectorAll('.project-item'));
+  function normalizeTag(t){
+    return (t || '').toString().trim().toLowerCase();
+  }
+  function setHidden(el, hidden){
+    if(hidden){
+      el.classList.add('is-hidden');
+      el.setAttribute('aria-hidden','true');
+      const content = el.querySelector('.project-card') || el.querySelector('.card') || el.firstElementChild;
+      if(content) content.classList.add('is-hidden');
+    } else {
+      el.classList.remove('is-hidden');
+      el.removeAttribute('aria-hidden');
+      const content = el.querySelector('.project-card') || el.querySelector('.card') || el.firstElementChild;
+      if(content) content.classList.remove('is-hidden');
+    }
+  }
+  function filterItems() {
+    const q = (search.value || '').trim().toLowerCase();
+    const activeTagBtn = tagButtons.find(b => b.getAttribute('aria-pressed') === 'true');
+    const activeTag = normalizeTag(activeTagBtn && activeTagBtn.dataset.tag);
+    items().forEach(it => {
+      const title = (it.dataset.title || '').toString().toLowerCase();
+      const rawTags = (it.dataset.tags || '').toString().toLowerCase().replace(/,/g,' ');
+      const tags = rawTags;
+      const matchesQuery = q === '' || title.includes(q) || tags.includes(q);
+      let matchesTag = false;
+      if(!activeTag || activeTag === 'all') matchesTag = true;
+      else {
+        const tagList = tags.split(/\s+/).filter(Boolean);
+        matchesTag = tagList.includes(activeTag);
+      }
+      const shouldShow = (matchesQuery && matchesTag);
+      setHidden(it, !shouldShow);
+    });
+  }
+  let debounceTimer = null;
+  search.addEventListener('input', () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(() => filterItems(), 150);
+  });
+  tagButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      tagButtons.forEach(b => { b.setAttribute('aria-pressed','false'); });
+      btn.setAttribute('aria-pressed','true');
+      filterItems();
+    });
+  });
+  items().forEach(it => setHidden(it, false));
+  filterItems();
+})();
+</script>
