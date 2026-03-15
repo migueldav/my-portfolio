@@ -7,7 +7,7 @@ const {
   path = ""
 } = Astro.props;
 
-const site = "https://seusite.com";
+const site = "https://migueldav.vercel.app/";
 const url = `${site}/${locale}${path}`;
 ---
 
@@ -33,6 +33,7 @@ const url = `${site}/${locale}${path}`;
 <meta name="twitter:title" content={title} />
 <meta name="twitter:description" content={description} />
 <meta name="twitter:image" content={image} />
+<link rel="shortcut icon" href="/my-portfolio/public/favicon/favicon.ico" type="image/x-icon">
 <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
 <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
 
@@ -41,8 +42,8 @@ const url = `${site}/${locale}${path}`;
     "@context": "https://schema.org",
     "@type": "Person",
     "name": "{SITE.name}",
-    "url": "https://seusite.com",
-    "jobTitle": "Frontend Developer",
+    "url": "{SITE.url}",
+    "jobTitle": "Full-Stack Developer",
     "sameAs": [
         "https://github.com/seuuser",
         "https://linkedin.com/in/seuuser"
