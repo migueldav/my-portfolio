@@ -4,7 +4,7 @@ export const PROJECTS = [
     title: "App Clima",
     desc: "Aplicativo que mostra a previsão do tempo usando React e API do OpenWeather.",
     tags: ["Frontend", "React", "API"],
-    slug: "app-clima",
+    slug: "http://proposal-migueldav.vercel.app/",
     repo: "#"
   },
   {
@@ -20,7 +20,7 @@ export const PROJECTS = [
     title: "Bot Telegram",
     desc: "Automação de mensagens e comandos via Python.",
     tags: ["Backend", "Python", "Bots"],
-    slug: "bot-telegram",
+    slug: "http://localhost:9000/",
     repo: "#"
   },
   {

@@ -2,8 +2,16 @@
   'use strict';
   console.info('demo-modal: init');
 
+  function isMobile() {
+    return (
+      window.matchMedia('(max-width: 800px)').matches ||
+      navigator.userAgent.includes('Mobi')
+    );
+  }
+
   function createOverlay(url, title) {
     const prevFocus = document.activeElement;
+
     const overlay = document.createElement('div');
     overlay.className = 'demo-overlay';
     overlay.tabIndex = -1;
@@ -13,6 +21,7 @@
 
     const header = document.createElement('div');
     header.className = 'demo-header';
+
     const h = document.createElement('div');
     h.className = 'demo-title';
     h.textContent = title || url;
@@ -29,13 +38,30 @@
     frame.className = 'demo-frame';
     frame.src = url;
     frame.title = title || 'Demo';
-    frame.setAttribute('allow', 'clipboard-read; clipboard-write; accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture');
+    frame.setAttribute(
+      'allow',
+      'clipboard-read; clipboard-write; accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture'
+    );
 
-    modal.appendChild(header);
-    modal.appendChild(frame);
-    overlay.appendChild(modal);
-    document.body.appendChild(overlay);
-    document.body.style.overflow = 'hidden';
+    const footer = document.createElement('div');
+    footer.className = 'demo-footer';
+
+    const openBtn = document.createElement('button');
+    openBtn.className = 'demo-open-full';
+    openBtn.innerHTML = `
+      Abrir demo completa
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M7 17L17 7M17 7H9M17 7V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    `;
+
+    function openInNewTab(url) {
+      try {
+        window.open(url, '_blank', 'noopener');
+      } catch (err) {
+        window.location.href = url;
+      }
+    }
 
     function close() {
       document.body.style.overflow = '';
@@ -44,16 +70,34 @@
       overlay.removeEventListener('pointerdown', onPointer);
       try { if (prevFocus && prevFocus.focus) prevFocus.focus(); } catch (e) {}
     }
+
+    openBtn.addEventListener('click', () => {
+      openInNewTab(url);
+      close();
+    });
+
+    footer.appendChild(openBtn);
+
+    modal.appendChild(header);
+    modal.appendChild(frame);
+    modal.appendChild(footer);
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    document.body.style.overflow = 'hidden';
+
     function onKey(e) {
       if (e.key === 'Escape') close();
     }
+
     function onPointer(e) {
       if (!modal.contains(e.target)) close();
     }
+
     btn.addEventListener('click', close);
     document.addEventListener('keydown', onKey);
     overlay.addEventListener('pointerdown', onPointer);
     overlay.focus();
+
     return { overlay, close, frame };
   }
 
@@ -73,8 +117,7 @@
           const a2 = el.closest('.demo-link');
           if (a2) return a2;
         }
-      } catch (err) {
-      }
+      } catch (err) {}
     }
 
     if (target && target.closest) {
@@ -103,7 +146,13 @@
     const url = (a.dataset && a.dataset.demo) ? a.dataset.demo : a.href;
     if (!url) return;
 
-    const wantNewTab = (e.button && e.button !== 0) || e.ctrlKey || e.metaKey || e.shiftKey || e.altKey;
+    const wantNewTab =
+      (e.button && e.button !== 0) ||
+      e.ctrlKey ||
+      e.metaKey ||
+      e.shiftKey ||
+      e.altKey;
+
     if (wantNewTab) {
       openInNewTab(url);
       e.preventDefault && e.preventDefault();
@@ -114,6 +163,11 @@
     e.preventDefault && e.preventDefault();
     e.stopPropagation && e.stopPropagation();
 
+    if (isMobile()) {
+      openInNewTab(url);
+      return;
+    }
+
     createOverlay(url, a.getAttribute('aria-label') || a.textContent || 'Demo');
   }
 
@@ -121,11 +175,13 @@
     if (e.key === 'Enter' || e.key === ' ') {
       const el = document.activeElement;
       if (!el) return;
+
       if (el.classList && el.classList.contains('demo-link')) {
         el.click();
         e.preventDefault();
         return;
       }
+
       const maybeLink = el.closest && el.closest('.project-card, .card, .project');
       if (maybeLink) {
         const inside = maybeLink.querySelector && maybeLink.querySelector('.demo-link');

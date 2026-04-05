@@ -10,7 +10,7 @@ const { project = null, title = '', desc = '', slug = '', locale = 'pt' } = Astr
 const p = project || {};
 const cardTitle = p.title || title || '';
 const cardDesc = p.desc || desc || '';
-const cardLink = `${locale}/demo/${p.slug || slug || ''}`;
+const cardLink = `${p.slug || slug || ''}`;
 const linkText = locale && String(locale).toLowerCase().startsWith('en') ? 'See demo' : 'Ver demo';
 ---
 <article class="card project-card" role="article" aria-label={cardTitle}>
