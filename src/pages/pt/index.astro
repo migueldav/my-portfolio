@@ -29,26 +29,28 @@ const projects = PROJECTS;
   </head>
 
   <body>
-    <Navbar site={SITE} ui={UI} />
+    <div class="background-blur">
+      <Navbar site={SITE} ui={UI} />
 
-    <Hero site={SITE} ui={UI} />
+      <Hero site={SITE} ui={UI} />
 
-    <main class="container" id="maincontent">
-      <section id="about">
-        <h2>{UI.aboutTitle}</h2>
-        <p>{SITE.about}</p>
-      </section>
+      <main class="container" id="maincontent">
+        <section id="about">
+          <h2>{UI.aboutTitle}</h2>
+          <p>{SITE.about}</p>
+        </section>
 
-      <Skills skills={SKILLS} locale="pt" />
+        <Skills skills={SKILLS} locale="pt" />
 
-      <ExpandableList id="extra-skills" title="Habilidades Extras" items={SKILLS_EXTRA} locale="pt" initiallyOpen={false} />
+        <ExpandableList id="extra-skills" title="Habilidades Extras" items={SKILLS_EXTRA} locale="pt" initiallyOpen={false} />
 
-      <ProjectsCarousel projects={projects} locale="pt" />
+        <ProjectsCarousel projects={projects} locale="pt" />
 
-      <Contact site={SITE} ui={UI} locale="pt" action="https://formspree.io/f/movkagjj" />
-    </main>
+        <Contact site={SITE} ui={UI} locale="pt" action="https://formspree.io/f/movkagjj" />
+      </main>
 
-    <Footer site={SITE} ui={UI} />
+      <Footer site={SITE} ui={UI} />
+    </div>
     
     <script src="/js/smooth-scroll.js" defer></script>
     <script src="/js/header-toggle.js" defer></script>
@@ -57,5 +59,6 @@ const projects = PROJECTS;
     <script src="/js/carousel.js" defer></script>
     <script src="/js/lang-toggle.js" defer></script>
     <script src="/js/demo-modal.js" defer></script>
+    <script src="/js/shine.js" defer></script>
   </body>
 </html>

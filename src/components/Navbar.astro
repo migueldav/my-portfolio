@@ -15,7 +15,9 @@ const openMenuLabel = locale && String(locale).toLowerCase().startsWith('en') ? 
 <header class="site-header" role="banner">
   <div class="container header-inner">
     <div class="header-left">
-      <strong class="site-name">{site.name}</strong>
+      <a href="#" class="site-name fx-name" id="header-name" data-text={site.name}>
+        {site.name}
+      </a>
     </div>
 
     <div class="header-center">

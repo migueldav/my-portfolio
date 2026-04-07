@@ -13,7 +13,7 @@ const cardDesc = p.desc || desc || '';
 const cardLink = `${p.slug || slug || ''}`;
 const linkText = locale && String(locale).toLowerCase().startsWith('en') ? 'See demo' : 'Ver demo';
 ---
-<article class="card project-card" role="article" aria-label={cardTitle}>
+<article class="card project-card glass" role="article" aria-label={cardTitle}>
   <div>
     <h3>{cardTitle}</h3>
     {cardDesc ? <p>{cardDesc}</p> : null}

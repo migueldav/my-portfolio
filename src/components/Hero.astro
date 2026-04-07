@@ -9,7 +9,7 @@ const { site = {}, ui = {} } = Astro.props;
 
 <header class="hero" id="hero">
   <div class="container">
-    <h1>{site.hero} <span class="accent">{site.name}</span></h1>
+    <h1><span class="wave">👋</span> {site.hero} <span id="name" class="accent" data-text={site.name}>{site.name}</span></h1>
     <p>{site.description}</p>
 
     <div style="display:flex;gap:.6rem;align-items:center;justify-content:center;margin-top:1rem;">

@@ -1,11 +1,10 @@
 export const PROJECTS = [
   {
-    id: "app-clima",
-    title: "App Clima",
-    desc: "Aplicativo que mostra a previsão do tempo usando React e API do OpenWeather.",
-    tags: ["Frontend", "React", "API"],
+    id: "gerador-de-proposta",
+    title: "Gerador de Proposta",
+    desc: "App de geração de proposta usando Vue e Gemini API.",
+    tags: ["Frontend", "Vue", "API"],
     slug: "http://proposal-migueldav.vercel.app/",
-    repo: "#"
   },
   {
     id: "portfolio",
@@ -13,7 +12,6 @@ export const PROJECTS = [
     desc: "Site one-page criado com Astro, responsivo e otimizado para SEO.",
     tags: ["Frontend", "Astro",],
     slug: "portfolio",
-    repo: "#"
   },
   {
     id: "bot-telegram",
@@ -21,7 +19,6 @@ export const PROJECTS = [
     desc: "Automação de mensagens e comandos via Python.",
     tags: ["Backend", "Python", "Bots"],
     slug: "http://localhost:9000/",
-    repo: "#"
   },
   {
     id: "test",
@@ -29,6 +26,5 @@ export const PROJECTS = [
     desc: "Lorem ipsum dolor sit amet consectetur adipisicing elit.",
     tags: ["Test",],
     slug: "test",
-    repo: "#"
   }
 ];
