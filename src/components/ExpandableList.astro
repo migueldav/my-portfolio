@@ -5,16 +5,30 @@ export interface Props {
   items: string[];
   locale?: string;
   initiallyOpen?: boolean;
+  hideOnMobile?: boolean;
 }
+
 const {
-  id = `expand-${Math.random().toString(36).slice(2,9)}`,
-  title = Astro.props.locale && String(Astro.props.locale).toLowerCase().startsWith('en') ? 'Show more' : 'Mostrar mais',
+  id = `expand-${Math.random().toString(36).slice(2, 9)}`,
+  title = Astro.props.locale && String(Astro.props.locale).toLowerCase().startsWith("en")
+    ? "Show more"
+    : "Mostrar mais",
   items = [],
-  initiallyOpen = false
+  initiallyOpen = false,
+  hideOnMobile = false,
 } = Astro.props;
+
 const contentId = `${id}-content`;
+const shouldHideOnMobile = hideOnMobile || id === "extra-skills";
 ---
-<div class="expandable" data-open={initiallyOpen ? "true" : "false"}>
+
+<div
+  id={id}
+  class="expandable"
+  data-expandable-root
+  data-open={initiallyOpen ? "true" : "false"}
+  data-hide-mobile={shouldHideOnMobile ? "true" : "false"}
+>
   <button
     type="button"
     class="expand-toggle"
@@ -36,7 +50,7 @@ const contentId = `${id}-content`;
     hidden={!initiallyOpen}
   >
     <ul class="expand-list">
-      {items.map(i => (
+      {items.map((i) => (
         <li class="expand-item">{i}</li>
       ))}
     </ul>
@@ -44,58 +58,96 @@ const contentId = `${id}-content`;
 </div>
 
 <script is:inline>
-(function () {
-  const scriptEl = document.currentScript;
-  const root = scriptEl && scriptEl.parentElement;
-  if (!root) return;
-  const btn = root.querySelector('[data-toggle-btn]');
-  const content = root.querySelector('[data-toggle-content]');
-  if (!btn || !content) return;
-  function open() {
-    content.hidden = false;
-    const h = content.scrollHeight;
-    content.style.maxHeight = '0px';
-    requestAnimationFrame(() => {
-      content.style.maxHeight = h + 'px';
-    });
-    btn.classList.add('open');
-    btn.setAttribute('aria-expanded', 'true');
-    content.setAttribute('aria-hidden', 'false');
-  }
-  function close() {
-    content.style.maxHeight = content.scrollHeight + 'px';
-    requestAnimationFrame(() => {
-      content.style.maxHeight = '0px';
-    });
-    btn.classList.remove('open');
-    btn.setAttribute('aria-expanded', 'false');
-    content.setAttribute('aria-hidden', 'true');
-    const onEnd = () => {
-      content.hidden = true;
-      content.removeEventListener('transitionend', onEnd);
+  (() => {
+    const scriptEl = document.currentScript;
+    const root = scriptEl?.parentElement;
+    if (!root) return;
+
+    const btn = root.querySelector("[data-toggle-btn]");
+    const content = root.querySelector("[data-toggle-content]");
+    if (!btn || !content) return;
+
+    const hideMobile = root.getAttribute("data-hide-mobile") === "true";
+    const mq = window.matchMedia("(max-width: 599px)");
+
+    const applyMobileVisibility = () => {
+      if (!hideMobile) return;
+
+      if (mq.matches) {
+        root.hidden = true;
+        root.style.display = "none";
+        return;
+      }
+
+      root.hidden = false;
+      root.style.display = "";
     };
-    content.addEventListener('transitionend', onEnd);
-  }
-  btn.addEventListener('click', () => {
-    const isOpen = btn.getAttribute('aria-expanded') === 'true';
-    if (isOpen) close();
-    else open();
-  });
-  btn.addEventListener('keydown', (e) => {
-    if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      btn.click();
+
+    function open() {
+      content.hidden = false;
+      const h = content.scrollHeight;
+      content.style.maxHeight = "0px";
+      requestAnimationFrame(() => {
+        content.style.maxHeight = h + "px";
+      });
+      btn.classList.add("open");
+      btn.setAttribute("aria-expanded", "true");
+      content.setAttribute("aria-hidden", "false");
     }
-  });
-  if (btn.getAttribute('aria-expanded') === 'true') {
-    content.style.maxHeight = content.scrollHeight + 'px';
-    btn.classList.add('open');
-    content.hidden = false;
-    content.setAttribute('aria-hidden', 'false');
-  } else {
-    content.style.maxHeight = '0px';
-    content.hidden = true;
-    content.setAttribute('aria-hidden', 'true');
-  }
-})();
+
+    function close() {
+      content.style.maxHeight = content.scrollHeight + "px";
+      requestAnimationFrame(() => {
+        content.style.maxHeight = "0px";
+      });
+      btn.classList.remove("open");
+      btn.setAttribute("aria-expanded", "false");
+      content.setAttribute("aria-hidden", "true");
+      const onEnd = () => {
+        content.hidden = true;
+        content.removeEventListener("transitionend", onEnd);
+      };
+      content.addEventListener("transitionend", onEnd);
+    }
+
+    btn.addEventListener("click", () => {
+      const isOpen = btn.getAttribute("aria-expanded") === "true";
+      if (isOpen) close();
+      else open();
+    });
+
+    btn.addEventListener("keydown", (e) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        btn.click();
+      }
+    });
+
+    const syncState = () => {
+      applyMobileVisibility();
+
+      if (mq.matches && hideMobile) {
+        return;
+      }
+
+      if (btn.getAttribute("aria-expanded") === "true") {
+        content.style.maxHeight = content.scrollHeight + "px";
+        btn.classList.add("open");
+        content.hidden = false;
+        content.setAttribute("aria-hidden", "false");
+      } else {
+        content.style.maxHeight = "0px";
+        content.hidden = true;
+        content.setAttribute("aria-hidden", "true");
+      }
+    };
+
+    syncState();
+
+    if (mq.addEventListener) {
+      mq.addEventListener("change", syncState);
+    } else {
+      mq.addListener(syncState);
+    }
+  })();
 </script>

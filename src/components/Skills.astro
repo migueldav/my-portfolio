@@ -1,33 +1,67 @@
 ---
+export interface SkillItem {
+  name: string;
+  category?: string;
+  level?: number;
+}
+
 export interface Props {
-  skills?: { name: string; category?: string; level?: number }[];
+  skills?: SkillItem[];
+  extraSkills?: Array<string | SkillItem>;
   visibleCount?: number;
   locale?: string;
 }
-const { skills = [], visibleCount = 4, locale = "pt" } = Astro.props;
-const skillTitle = locale && String(locale).toLowerCase().startsWith('en') ? 'Skills' : 'Habilidades';
-const first = (skills || []).slice(0, visibleCount);
-const rest = (skills || []).slice(visibleCount);
-const uid = `skills-${Math.random().toString(36).slice(2,9)}`;
-const gridId = `${uid}-grid`;
-const extraId = `${uid}-extra`;
-const toggleId = `${uid}-toggle`;
-const toggleLead = locale && String(locale).toLowerCase().startsWith('en') ? "Technologies and tools I work with most often." : "Tecnologias e ferramentas com as quais trabalho com mais frequência.";
-const toggleLabel = locale && String(locale).toLowerCase().startsWith('en') ? "Show more skills" : "Mostrar mais habilidades";
+
+type ExpandedSkill = SkillItem & {
+  mobileOnly?: boolean;
+  isExtra?: boolean;
+};
+
+const {
+  skills = [],
+  extraSkills = [],
+  visibleCount = 4,
+  locale = "pt",
+} = Astro.props as Props;
+
+const isEn = String(locale).toLowerCase().startsWith("en");
+const skillTitle = isEn ? "Skills" : "Habilidades";
+
+const visibleSkills = skills.slice(0, visibleCount);
+const hiddenSkills = skills.slice(visibleCount);
+
+const extras: ExpandedSkill[] = extraSkills.map((item) =>
+  typeof item === "string"
+    ? { name: item, mobileOnly: true, isExtra: true }
+    : { ...item, mobileOnly: true, isExtra: true },
+);
+
+const expandedMobileSkills: ExpandedSkill[] = [
+  ...hiddenSkills.map((item) => ({ ...item })),
+  ...extras,
+];
+
+const toggleLead = isEn
+  ? "Technologies and tools I work with most often."
+  : "Tecnologias e ferramentas com as quais trabalho com mais frequência.";
+
+const toggleLabel = isEn ? "Show more skills" : "Mostrar mais habilidades";
 ---
+
 <section id="skills" class="skills-section">
   <h2>{skillTitle}</h2>
   <p class="lead">{toggleLead}</p>
 
-  <div id={gridId} class="skills-grid" role="list">
-    {first.map((s) => (
-      <div class="skill" role="listitem" aria-label={`${s.name} — ${s.level ?? ""}%`}>
+  <div class="skills-grid" data-skills-grid role="list">
+    {visibleSkills.map((s) => (
+      <div class="skill" role="listitem">
         <div class="skill-meta-left">
           <strong class="skill-name">{s.name}</strong>
-          <span class="skill-category">{s.category}</span>
+          {s.category && <span class="skill-category">{s.category}</span>}
         </div>
-        <div class="skill-bar-wrap" aria-hidden="false" aria-label={`${s.name} ${locale && String(locale).toLowerCase().startsWith('en') ? 'level' : 'nivel'} ${s.level ?? ""}%`}>
-          <div class="skill-bar" style={`--val:${s.level ?? 0}%`} role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={String(s.level ?? 0)}>
+
+        <div class="skill-bar-wrap">
+          <div class="skill-bar">
             <span class="skill-bar-inner" style={`width: ${s.level ?? 0}%`}></span>
           </div>
           <div class="skill-level">{s.level ?? 0}%</div>
@@ -35,87 +69,183 @@ const toggleLabel = locale && String(locale).toLowerCase().startsWith('en') ? "S
       </div>
     ))}
 
-    <div id={extraId} class="extra-skills" aria-hidden="true">
-      {rest.map((s) => (
-        <div class="skill" role="listitem" aria-label={`${s.name} — ${s.level ?? ""}%`}>
-          <div class="skill-meta-left">
-            <strong class="skill-name">{s.name}</strong>
-            <span class="skill-category">{s.category}</span>
-          </div>
-          <div class="skill-bar-wrap" aria-hidden="false" aria-label={`${s.name} ${locale && String(locale).toLowerCase().startsWith('en') ? 'level' : 'nivel'} ${s.level ?? ""} por cento`}>
-            <div class="skill-bar" style={`--val:${s.level ?? 0}%`} role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow={String(s.level ?? 0)}>
-              <span class="skill-bar-inner" style={`width: ${s.level ?? 0}%`}></span>
-            </div>
-            <div class="skill-level">{s.level ?? 0}%</div>
+    {expandedMobileSkills.length > 0 && (
+      <div class="mobile-expandable" data-mobile-expandable aria-hidden="true">
+        <div class="more-skills" data-more-skills>
+          <div class="more-skills-list">
+            {expandedMobileSkills.map((s, index) => (
+              <div
+                class:list={[
+                  "skill",
+                  "more-skill",
+                  s.mobileOnly && "mobile-only-skill",
+                ]}
+                role="listitem"
+                style={`--delay:${index * 45}ms;`}
+              >
+                <div class="skill-meta-left">
+                  <strong class="skill-name">{s.name}</strong>
+                  {s.category && <span class="skill-category">{s.category}</span>}
+                </div>
+
+                {!s.isExtra && typeof s.level === "number" && (
+                  <div class="skill-bar-wrap">
+                    <div class="skill-bar">
+                      <span class="skill-bar-inner" style={`width: ${s.level}%`}></span>
+                    </div>
+                    <div class="skill-level">{s.level}%</div>
+                  </div>
+                )}
+              </div>
+            ))}
           </div>
         </div>
-      ))}
-    </div>
+      </div>
+    )}
   </div>
 
-  <div style="margin-top:.6rem; display:flex; justify-content:center;">
-    <button id={toggleId}
-            class="expand-btn"
-            aria-expanded="false"
-            aria-controls={extraId}
-            title={toggleLabel}>
-      <ion-icon name="chevron-down-outline" aria-hidden="true"></ion-icon>
-    </button>
-  </div>
+  {expandedMobileSkills.length > 0 && (
+    <div style="margin-top:.6rem; display:flex; justify-content:center;">
+      <button class="expand-btn" data-toggle aria-expanded="false" title={toggleLabel} type="button">
+        <ion-icon name="chevron-down-outline"></ion-icon>
+      </button>
+    </div>
+  )}
 
   <script is:inline>
-  (function(){
-    const toggle = document.getElementById("{{toggleId}}");
-    const extra = document.getElementById("{{extraId}}");
-    const grid = document.getElementById("{{gridId}}");
-    if(!toggle || !extra || !grid) return;
-    function open(){
-      extra.classList.add("open");
-      extra.setAttribute("aria-hidden","false");
-      extra.hidden = false;
-      toggle.setAttribute("aria-expanded","true");
-      grid.classList.add("expanded");
-      const h = extra.scrollHeight;
-      extra.style.maxHeight = h + "px";
-    }
-    function close(){
-      extra.style.maxHeight = extra.scrollHeight + "px";
-      requestAnimationFrame(()=>{ extra.style.maxHeight = "0px"; });
-      extra.classList.remove("open");
-      extra.setAttribute("aria-hidden","true");
-      toggle.setAttribute("aria-expanded","false");
-      grid.classList.remove("expanded");
-      const onEnd = ()=>{ extra.hidden = true; extra.removeEventListener("transitionend", onEnd); };
-      extra.addEventListener("transitionend", onEnd);
-    }
-    function setOpen(state){
-      if(state) open(); else close();
-      try{ toggle.focus(); }catch(e){}
-    }
-    toggle.addEventListener("click", ()=>{ const isOpen = toggle.getAttribute("aria-expanded")==="true"; setOpen(!isOpen); });
-    const mq = window.matchMedia("(min-width: 600px)");
-    function handleMq(e){
-      if(e.matches){
-        extra.classList.add("open");
-        extra.setAttribute("aria-hidden","false");
-        extra.hidden = false;
-        toggle.style.display = "none";
-        toggle.setAttribute("aria-expanded","true");
+    (() => {
+      const section = document.querySelector("#skills");
+      if (!section) return;
+
+      const toggle = section.querySelector("[data-toggle]");
+      const expandable = section.querySelector("[data-mobile-expandable]");
+      const grid = section.querySelector("[data-skills-grid]");
+
+      if (!toggle || !expandable || !grid) return;
+
+      const mq = window.matchMedia("(min-width: 600px)");
+      let expanded = false;
+      let animating = false;
+
+      function setDesktop() {
+        animating = false;
+        expanded = true;
+
         grid.classList.add("expanded");
-        extra.style.maxHeight = "none";
-      } else {
-        extra.classList.remove("open");
-        extra.setAttribute("aria-hidden","true");
-        extra.hidden = true;
-        toggle.style.display = "";
-        toggle.setAttribute("aria-expanded","false");
-        grid.classList.remove("expanded");
-        extra.style.maxHeight = "0px";
+        toggle.hidden = true;
+        toggle.setAttribute("aria-expanded", "true");
+
+        expandable.style.display = "contents";
+        expandable.style.maxHeight = "";
+        expandable.style.opacity = "1";
+        expandable.style.transform = "none";
+        expandable.style.visibility = "visible";
+        expandable.style.pointerEvents = "auto";
+        expandable.setAttribute("aria-hidden", "false");
       }
-    }
-    handleMq(mq);
-    if(mq.addEventListener) mq.addEventListener("change", handleMq); else mq.addListener(handleMq);
-    if(toggle.getAttribute("aria-expanded")==="true") open();
-  })();
+
+      function setMobileClosed() {
+        animating = false;
+        expanded = false;
+
+        grid.classList.remove("expanded");
+        toggle.hidden = false;
+        toggle.setAttribute("aria-expanded", "false");
+
+        expandable.style.display = "block";
+        expandable.style.maxHeight = "0px";
+        expandable.style.opacity = "0";
+        expandable.style.transform = "translateY(-8px)";
+        expandable.style.visibility = "hidden";
+        expandable.style.pointerEvents = "none";
+        expandable.setAttribute("aria-hidden", "true");
+      }
+
+      function openMobile() {
+        if (animating || expanded || mq.matches) return;
+        animating = true;
+        expanded = true;
+
+        grid.classList.add("expanded");
+        toggle.setAttribute("aria-expanded", "true");
+
+        expandable.style.display = "block";
+        expandable.style.visibility = "visible";
+        expandable.style.pointerEvents = "auto";
+        expandable.style.opacity = "1";
+        expandable.style.transform = "translateY(0)";
+        expandable.style.maxHeight = "0px";
+        expandable.getBoundingClientRect();
+
+        requestAnimationFrame(() => {
+          expandable.style.maxHeight = expandable.scrollHeight + "px";
+        });
+
+        const onEnd = (e) => {
+          if (e.target !== expandable || e.propertyName !== "max-height") return;
+          expandable.removeEventListener("transitionend", onEnd);
+          expandable.style.maxHeight = "none";
+          animating = false;
+        };
+
+        expandable.addEventListener("transitionend", onEnd);
+      }
+
+      function closeMobile() {
+        if (animating || !expanded || mq.matches) return;
+        animating = true;
+
+        const currentHeight = expandable.scrollHeight;
+
+        expandable.style.display = "block";
+        expandable.style.visibility = "visible";
+        expandable.style.pointerEvents = "auto";
+        expandable.style.opacity = "1";
+        expandable.style.transform = "translateY(0)";
+        expandable.style.maxHeight = currentHeight + "px";
+        expandable.getBoundingClientRect();
+
+        requestAnimationFrame(() => {
+          expandable.style.maxHeight = "0px";
+          expandable.style.opacity = "0";
+          expandable.style.transform = "translateY(-8px)";
+        });
+
+        expanded = false;
+        grid.classList.remove("expanded");
+        toggle.setAttribute("aria-expanded", "false");
+        expandable.setAttribute("aria-hidden", "true");
+
+        const onEnd = (e) => {
+          if (e.target !== expandable || e.propertyName !== "max-height") return;
+          expandable.removeEventListener("transitionend", onEnd);
+          expandable.style.visibility = "hidden";
+          expandable.style.pointerEvents = "none";
+          expandable.style.display = "none";
+          animating = false;
+        };
+
+        expandable.addEventListener("transitionend", onEnd);
+      }
+
+      function sync() {
+        if (mq.matches) setDesktop();
+        else setMobileClosed();
+      }
+
+      toggle.addEventListener("click", () => {
+        if (mq.matches) return;
+        if (expanded) closeMobile();
+        else openMobile();
+      });
+
+      sync();
+
+      if (mq.addEventListener) {
+        mq.addEventListener("change", sync);
+      } else {
+        mq.addListener(sync);
+      }
+    })();
   </script>
 </section>

@@ -1,10 +1,16 @@
 .hero {
-  padding: 6.5rem 0 4.25rem;
+  min-height: calc(110vh - var(--header-height));
+  padding-top: var(--header-height);
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   text-align: center;
+
   background: linear-gradient(180deg, rgba(255,255,255,0.02), transparent 60%);
   border-bottom: 1px solid rgba(255,255,255,0.03);
 }
-
 .hero h1 {
   font-size: 3rem;
   margin-bottom: 1.5rem;

@@ -55,7 +55,11 @@ a:hover{text-decoration:underline}
   outline-offset:3px
 }
 
-section{margin-top:8.25rem}
+section{margin-top:2.25rem}
+
+#about{
+  margin-top:-2.5rem;
+}
 
 h2{
   font-size:1.35rem;
